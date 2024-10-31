@@ -9,6 +9,11 @@ services:
       - "./data/clickhouse:/var/lib/clickhouse"
     networks:
       - graphite-clickhouse-tldr
+    cap_add: &caps
+      - SYS_PTRACE
+      - NET_ADMIN
+      - IPC_LOCK
+      - SYS_NICE
   carbon-clickhouse:
     image: ghcr.io/go-graphite/carbon-clickhouse:0.11.8
     user: "${UID:?run `make prepare`}:${GID:?run `make prepare`}"
