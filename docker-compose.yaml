@@ -1,44 +1,44 @@
-version: "3.5"
+---
 services:
   clickhouse:
     image: clickhouse/clickhouse-server:24.8
     user: "${UID:?You must do 'export UID' to launch}"
     volumes:
-    - "./rollup.xml:/etc/clickhouse-server/config.d/rollup.xml"
-    - "./init.sql:/docker-entrypoint-initdb.d/init.sql"
-    - "./data/clickhouse:/var/lib/clickhouse"
+      - "./rollup.xml:/etc/clickhouse-server/config.d/rollup.xml"
+      - "./init.sql:/docker-entrypoint-initdb.d/init.sql"
+      - "./data/clickhouse:/var/lib/clickhouse"
     networks:
       - graphite-clickhouse-tldr
   carbon-clickhouse:
     image: ghcr.io/go-graphite/carbon-clickhouse:0.11.8
     user: "${UID:?You must do 'export UID' to launch}"
     volumes:
-    - "./data:/data"
-    - "./carbon-clickhouse.conf:/etc/carbon-clickhouse/carbon-clickhouse.conf"
+      - "./data:/data"
+      - "./carbon-clickhouse.conf:/etc/carbon-clickhouse/carbon-clickhouse.conf"
     ports:
-    - "2003:2003" # plain tcp
-    - "2003:2003/udp" # plain udp
-    - "2004:2004" # pickle
-    - "2006:2006" # prometheus remote write
+      - "2003:2003"  # plain tcp
+      - "2003:2003/udp"  # plain udp
+      - "2004:2004"  # pickle
+      - "2006:2006"  # prometheus remote write
     networks:
       - graphite-clickhouse-tldr
   graphite-clickhouse:
     image: ghcr.io/go-graphite/graphite-clickhouse:0.14.0
     volumes:
-    - "./rollup.xml:/etc/graphite-clickhouse/rollup.xml"
-    - "./graphite-clickhouse.conf:/etc/graphite-clickhouse/graphite-clickhouse.conf"
+      - "./rollup.xml:/etc/graphite-clickhouse/rollup.xml"
+      - "./graphite-clickhouse.conf:/etc/graphite-clickhouse/graphite-clickhouse.conf"
     networks:
       - graphite-clickhouse-tldr
   graphite-web:
     image: graphiteapp/graphite-statsd:1.1.10-5
     volumes:
-    - "./graphiteweb_entrypoint.sh:/entrypoint.sh"
-    - "./graphiteweb.conf:/opt/graphite/webapp/graphite/local_settings.py"
+      - "./graphiteweb_entrypoint.sh:/entrypoint.sh"
+      - "./graphiteweb.conf:/opt/graphite/webapp/graphite/local_settings.py"
     entrypoint: /entrypoint.sh
     networks:
       - graphite-clickhouse-tldr
     ports:
-    - "80:80" # http ui
+      - "80:80"  # http ui
 
 networks:
   graphite-clickhouse-tldr:
