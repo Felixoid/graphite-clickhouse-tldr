@@ -1,7 +1,7 @@
 version: "3.5"
 services:
   clickhouse:
-    image: clickhouse/clickhouse-server:21.8
+    image: clickhouse/clickhouse-server:24.8
     user: "${UID:?You must do 'export UID' to launch}"
     volumes:
     - "./rollup.xml:/etc/clickhouse-server/config.d/rollup.xml"
@@ -10,7 +10,7 @@ services:
     networks:
       - graphite-clickhouse-tldr
   carbon-clickhouse:
-    image: ghcr.io/lomik/carbon-clickhouse:0.11.2
+    image: ghcr.io/go-graphite/carbon-clickhouse:0.11.8
     user: "${UID:?You must do 'export UID' to launch}"
     volumes:
     - "./data:/data"
@@ -23,14 +23,14 @@ services:
     networks:
       - graphite-clickhouse-tldr
   graphite-clickhouse:
-    image: ghcr.io/lomik/graphite-clickhouse:0.13.2
+    image: ghcr.io/go-graphite/graphite-clickhouse:0.14.0
     volumes:
     - "./rollup.xml:/etc/graphite-clickhouse/rollup.xml"
     - "./graphite-clickhouse.conf:/etc/graphite-clickhouse/graphite-clickhouse.conf"
     networks:
       - graphite-clickhouse-tldr
   graphite-web:
-    image: graphiteapp/graphite-statsd:1.1.8-1
+    image: graphiteapp/graphite-statsd:1.1.10-5
     volumes:
     - "./graphiteweb_entrypoint.sh:/entrypoint.sh"
     - "./graphiteweb.conf:/opt/graphite/webapp/graphite/local_settings.py"
