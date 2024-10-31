@@ -2,7 +2,7 @@
 services:
   clickhouse:
     image: clickhouse/clickhouse-server:24.8
-    user: "${UID:?You must do 'export UID' to launch}"
+    user: "${UID:?run `make prepare`}:${GID:?run `make prepare`}"
     volumes:
       - "./rollup.xml:/etc/clickhouse-server/config.d/rollup.xml"
       - "./init.sql:/docker-entrypoint-initdb.d/init.sql"
@@ -11,7 +11,7 @@ services:
       - graphite-clickhouse-tldr
   carbon-clickhouse:
     image: ghcr.io/go-graphite/carbon-clickhouse:0.11.8
-    user: "${UID:?You must do 'export UID' to launch}"
+    user: "${UID:?run `make prepare`}:${GID:?run `make prepare`}"
     volumes:
       - "./data:/data"
       - "./carbon-clickhouse.conf:/etc/carbon-clickhouse/carbon-clickhouse.conf"
