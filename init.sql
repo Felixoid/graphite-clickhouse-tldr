@@ -1,3 +1,5 @@
+CREATE DATABASE IF NOT EXISTS default;
+
 CREATE TABLE IF NOT EXISTS default.graphite_data (
   Path String CODEC(ZSTD(3)), -- better compression
   Value Float64 CODEC(Gorilla, LZ4), -- better codec for Floats

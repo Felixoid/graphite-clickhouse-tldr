@@ -32,18 +32,32 @@ services:
     volumes:
       - "./rollup.xml:/etc/graphite-clickhouse/rollup.xml"
       - "./graphite-clickhouse.conf:/etc/graphite-clickhouse/graphite-clickhouse.conf"
+    ports:
+      - "9090:9090"  # carbonapi/graphite-web endpoint
+      - "9092:9092"  # prometheus endpoint
     networks:
       - graphite-clickhouse-tldr
-  graphite-web:
-    image: graphiteapp/graphite-statsd:1.1.10-5
+  carbonapi:
+    image: ghcr.io/go-graphite/carbonapi:0.17.0
     volumes:
-      - "./graphiteweb_entrypoint.sh:/entrypoint.sh"
-      - "./graphiteweb.conf:/opt/graphite/webapp/graphite/local_settings.py"
-    entrypoint: /entrypoint.sh
+      - "./carbonapi.yml:/etc/carbonapi.yml"
+      - "./graphTemplates.yaml:/etc/graphTemplates.yaml"
     networks:
       - graphite-clickhouse-tldr
     ports:
-      - "80:80"  # http ui
+      - "7080:7080"  # http ui
+  grafana:
+    user: "${UID:?run `make prepare`}:${GID:?run `make prepare`}"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "tldr"
+    image: grafana/grafana:11.3.0-ubuntu
+    volumes:
+      - "./data/grafana:/var/lib/grafana"
+      - "./grafana-graphite-datasource.yaml:/etc/grafana/provisioning/datasources/graphite.yaml"
+    networks:
+      - graphite-clickhouse-tldr
+    ports:
+      - "80:3000"  # http ui
 
 networks:
   graphite-clickhouse-tldr:
