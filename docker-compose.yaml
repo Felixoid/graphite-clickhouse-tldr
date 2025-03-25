@@ -9,6 +9,8 @@ services:
       - "./data/clickhouse:/var/lib/clickhouse"
     networks:
       - graphite-clickhouse-tldr
+    environment:
+      CLICKHOUSE_SKIP_USER_SETUP: 1
     cap_add: &caps
       - SYS_PTRACE
       - NET_ADMIN
