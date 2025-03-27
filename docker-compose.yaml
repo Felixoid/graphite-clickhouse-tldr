@@ -17,6 +17,24 @@ services:
       - NET_ADMIN
       - IPC_LOCK
       - SYS_NICE
+  coal-mine:
+    image: coal-mine
+    build:
+      context: coal-mine
+    user: "${UID:?run `make prepare`}:${GID:?run `make prepare`}"
+    networks:
+      - graphite-clickhouse-tldr
+    volumes:
+      - "./data:/data:ro"
+    entrypoint: /bin/sh -c
+    command:
+      - |
+          while :; do
+            if ! [ "$( find /data/carbon-clickhouse -size +200000 )" ]; then
+              coal-mine --random 'server{001..100}.soft{001..5}.metrics.random{001..100}' --from -10d --until now --step 3 --carbon 'tcp://carbon-clickhouse:2003'
+            else sleep 1
+            fi
+          done
   carbon-clickhouse:
     image: ghcr.io/go-graphite/carbon-clickhouse:0.11.8
     user: "${UID:?run `make prepare`}:${GID:?run `make prepare`}"
